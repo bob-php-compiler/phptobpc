@@ -56,6 +56,12 @@ class PhpToBpcConverter extends \PhpParser\NodeVisitorAbstract
             if ($node->if === null) {
                 $node->if = $node->cond;
             }
+        } elseif ($node instanceof Expr\BinaryOp\Coalesce) {
+            return new Expr\Ternary(
+                new Expr\Isset_(array($node->left)),    // cond
+                $node->left,                            // if
+                $node->right                            // else
+            );
         } elseif ($node instanceof Stmt\Namespace_) {
             // returning an array merges is into the parent array
             return $node->stmts;
