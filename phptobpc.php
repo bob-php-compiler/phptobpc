@@ -64,6 +64,15 @@ class PhpToBpcConverter extends \PhpParser\NodeVisitorAbstract
                 $node->left,                            // if
                 $node->right                            // else
             );
+        } elseif (   $node instanceof Stmt\If_
+                  && $node->cond instanceof Expr\FuncCall
+                  && $node->cond->name->toString() == 'defined'
+                  && count($node->cond->args) == 1
+                  && $node->cond->args[0] instanceof Node\Arg
+                  && $node->cond->args[0]->value instanceof Node\Scalar\String_
+                  && $node->cond->args[0]->value->value == '__BPC__'
+        ) {
+            return $node->stmts;
         } elseif ($node instanceof Stmt\Namespace_) {
             // returning an array merges is into the parent array
             return $node->stmts;
