@@ -52,6 +52,10 @@ class PhpToBpcConverter extends \PhpParser\NodeVisitorAbstract
             $node->name = new Node\Name(
                 str_replace('\\', '_', $node->name->toString())
             );
+        } elseif ($node instanceof Expr\Ternary) {
+            if ($node->if === null) {
+                $node->if = $node->cond;
+            }
         } elseif ($node instanceof Stmt\Namespace_) {
             // returning an array merges is into the parent array
             return $node->stmts;
