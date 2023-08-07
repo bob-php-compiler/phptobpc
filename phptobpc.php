@@ -98,6 +98,6 @@ try {
     $stmts = $traverser->traverse($stmts);
     echo $prettyPrinter->prettyPrintFile($stmts);
 } catch (Error $e) {
-    echo 'Parse Error: ', $e->getMessage();
+    fwrite(STDERR, 'Parse Error: ' . $e->getMessage() . "\n");
     exit(1);
 }
