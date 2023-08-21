@@ -66,6 +66,7 @@ class PhpToBpcConverter extends \PhpParser\NodeVisitorAbstract
             );
         } elseif (   $node instanceof Stmt\If_
                   && $node->cond instanceof Expr\FuncCall
+                  && $node->cond->name instanceof Node\Name
                   && $node->cond->name->toString() == 'defined'
                   && count($node->cond->args) == 1
                   && $node->cond->args[0] instanceof Node\Arg
