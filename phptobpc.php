@@ -82,6 +82,9 @@ class PhpToBpcConverter extends \PhpParser\NodeVisitorAbstract
         ) {
             // remove use nodes altogether
             return NodeTraverser::REMOVE_NODE;
+        } elseif ($node instanceof Stmt\Declare_) {
+            // remove declare(xxx)
+            return NodeTraverser::REMOVE_NODE;
         }
     }
 }
