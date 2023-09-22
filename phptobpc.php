@@ -87,6 +87,9 @@ class PhpToBpcConverter extends \PhpParser\NodeVisitorAbstract
         } elseif ($node instanceof Stmt\Declare_) {
             // remove declare(xxx)
             return NodeTraverser::REMOVE_NODE;
+        } elseif ($node instanceof Stmt\ClassConst) {
+            // remove class const visibility
+            $node->flags = 0;
         }
     }
 }
