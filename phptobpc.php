@@ -32,7 +32,9 @@ class PhpToBpcConverter extends \PhpParser\NodeVisitorAbstract
         } elseif ($node instanceof Stmt\Function_) {
             $node->name = $node->namespacedName->toString();
             $node->returnType = null;
-        } elseif ($node instanceof Stmt\ClassMethod) {
+        } elseif (   $node instanceof Stmt\ClassMethod
+                  || $node instanceof Expr\Closure
+        ) {
             $node->returnType = null;
         } elseif ($node instanceof Stmt\Const_) {
             $defines = array();
