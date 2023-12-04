@@ -27,7 +27,10 @@ class PhpToBpcConverter extends \PhpParser\NodeVisitorAbstract
              $node->setAttribute('kind', Expr\Array_::KIND_LONG);
         } elseif ($node instanceof Node\Name) {
             return new Node\Name($node->toString());
-        } elseif ($node instanceof Stmt\Class_ || $node instanceof Stmt\Interface_) {
+        } elseif (   $node instanceof Stmt\Class_
+                  || $node instanceof Stmt\Interface_
+                  || $node instanceof Stmt\Trait_
+        ) {
             $node->name = $node->namespacedName->toString();
         } elseif ($node instanceof Stmt\Function_) {
             $node->name = $node->namespacedName->toString();
