@@ -22,11 +22,35 @@ spl_autoload_register(function ($class) {
 
 class PhpToBpcConverter extends \PhpParser\NodeVisitorAbstract
 {
+    protected $namespacedFuncs = array();
+
+    public function enterNode(Node $node)
+    {
+        if ($node instanceof Stmt\Function_) {
+            if (count($node->namespacedName->parts) > 1) {
+                $this->namespacedFuncs[$node->namespacedName->toString()] = true;
+            }
+        }
+    }
+
     public function leaveNode(Node $node) {
         if ($node instanceof Expr\Array_) {
              $node->setAttribute('kind', Expr\Array_::KIND_LONG);
         } elseif ($node instanceof Node\Name) {
-            return new Node\Name($node->toString());
+            // leaveNode是从内到外的,所以先遇到Node\Name,再遇到Expr\FuncCall
+            // 有attribute namespacedName,说明这个name不确定,unresolved
+            // function call会这样
+            if (!$node->getAttribute('namespacedName')) {
+                return new Node\Name($node->toString());
+            }
+        } elseif ($node instanceof Expr\FuncCall) {
+            $namespacedName = $node->name->getAttribute('namespacedName');
+            if ($namespacedName) {
+                $func = $namespacedName->toString();
+                if (isset($this->namespacedFuncs[$func])) {
+                    $node->name = new Node\Name($func);
+                }
+            }
         } elseif (   $node instanceof Stmt\Class_
                   || $node instanceof Stmt\Interface_
                   || $node instanceof Stmt\Trait_
