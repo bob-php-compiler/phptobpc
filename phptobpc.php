@@ -117,6 +117,14 @@ class PhpToBpcConverter extends \PhpParser\NodeVisitorAbstract
         } elseif ($node instanceof Stmt\ClassConst) {
             // remove class const visibility
             $node->flags = 0;
+        } elseif ($node instanceof Stmt\Expression) {
+            // remove assert()
+            if (   $node->expr instanceof Expr\FuncCall
+                && $node->expr->name instanceof Node\Name
+                && $node->expr->name->toString() == 'assert'
+            ) {
+                return NodeTraverser::REMOVE_NODE;
+            }
         }
     }
 }
