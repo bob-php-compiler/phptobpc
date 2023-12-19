@@ -125,6 +125,10 @@ class PhpToBpcConverter extends \PhpParser\NodeVisitorAbstract
             ) {
                 return NodeTraverser::REMOVE_NODE;
             }
+        } elseif (   $node instanceof Expr\Assign
+                  && $node->var instanceof Expr\Array_
+        ) {
+            $node->var = new Expr\List_($node->var->items);
         }
     }
 }
