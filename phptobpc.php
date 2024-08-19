@@ -34,9 +34,7 @@ class PhpToBpcConverter extends \PhpParser\NodeVisitorAbstract
     }
 
     public function leaveNode(Node $node) {
-        if ($node instanceof Expr\Array_) {
-             $node->setAttribute('kind', Expr\Array_::KIND_LONG);
-        } elseif ($node instanceof Node\Name) {
+        if ($node instanceof Node\Name) {
             // leaveNode是从内到外的,所以先遇到Node\Name,再遇到Expr\FuncCall
             // 有attribute namespacedName,说明这个name不确定,unresolved
             // function call会这样
@@ -92,16 +90,6 @@ class PhpToBpcConverter extends \PhpParser\NodeVisitorAbstract
         } elseif ($node instanceof Expr\ConstFetch) {
             $node->name = new Node\Name(
                 str_replace('\\', '_', $node->name->toString())
-            );
-        } elseif ($node instanceof Expr\Ternary) {
-            if ($node->if === null) {
-                $node->if = $node->cond;
-            }
-        } elseif ($node instanceof Expr\BinaryOp\Coalesce) {
-            return new Expr\Ternary(
-                new Expr\Isset_(array($node->left)),    // cond
-                $node->left,                            // if
-                $node->right                            // else
             );
         } elseif (   $node instanceof Stmt\If_
                   && $node->cond instanceof Expr\FuncCall
